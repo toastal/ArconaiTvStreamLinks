@@ -14,7 +14,18 @@ node_modules
 __pycache__/
 *.py[cod]
 
+*.apk
+*.dex
+*.class
+Android/bin/
+Android/gen/
+Android/assets/
+bin/
+gen/
+local.properties
+
 .tup
 
+/platforms/
 /www/
 /www-bak/

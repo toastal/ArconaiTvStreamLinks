@@ -1,4 +1,4 @@
-{apply, invoker, map, partialRight, pipeP, prop, sortBy, tap, trim} = R
+{apply, invoker, map, partialRight, path, pipeP, prop, sortBy, tap, trim, T} = R
 
 {a, button, div, footer, header, h1, label, li, option, select, span, ul} = React.DOM
 
@@ -37,7 +37,8 @@ ShowListItem = React.createClass {
 
   getInitialState: :getIntialState ->
     {
-      isLoading: false
+      isLoading : false
+      href      : ""
     }
 
   fetchStream: :fetchStream (e) ->
@@ -49,12 +50,17 @@ ShowListItem = React.createClass {
       (prop "src"),
       ((src) ~>
         @setState {isLoading: false}
-        if src then window.open src, "_self")
+        if src
+          @setState {href: src}
+          if path ["cordova", "platformId"], window is "android" and window.viewFileFromUrl
+            window.viewFileFromUrl T, ((err) -> alert "File Handle Error: " + err), src
+          else
+            window.open src, "_self")
     )
 
   render: :render ->
     li {className: "asl-list-item"}, [
-      a {className: "asl-list-link", href: @props.data.url, target: "_blank", onClick: @fetchStream}, [
+      a {className: "asl-list-link", href: @state.href, target: "_blank", onClick: @fetchStream}, [
         span null, @props.data.title
         if @state.isLoading then span {className: "asl-list-item-spinner"}, "❋"
       ]

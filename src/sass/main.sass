@@ -84,6 +84,7 @@ a
   padding: 0.5em
   border: none
   background: none
+  color: $color-primary
   font-size: 1.2em
   line-height: 0
 
@@ -92,7 +93,11 @@ a
 
   &:active
     margin: 0
-    color: $color-primary
+    color: #fff
+
+    .dark &
+      color: #000
+
 
 .asl-settings-dialog
   position: absolute

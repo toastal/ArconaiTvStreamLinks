@@ -1,0 +1,33 @@
+SRC_DIR = $(TUP_CWD)/src
+LS_DIR = $(SRC_DIR)/ls
+JS_LIBS_DIR = $(SRC_DIR)/js/libs
+SASS_DIR = $(SRC_DIR)/sass
+WWW_DIR = $(TUP_CWD)/www
+CSS_DIR = $(WWW_DIR)/css
+JS_DIR = $(WWW_DIR)/js
+
+SASSC_FLAGS = --style compressed
+SASSC_FLAGS += --precision 10
+
+POSTCSS_FLAGS = --use autoprefixer
+POSTCSS_FLAGS += --autoprefixer.browsers "last 2 version, > 2%, Firefox ESR, ChromeAndroid > 4.1"
+
+LSC_FLAGS = --compile
+LSC_FLAGS += --no-header
+LSC_FLAGS += --print
+
+UGLIFYJS_FLAGS = --compress
+UGLIFYJS_FLAGS += --screw-ie8
+
+
+# Jade
+:$(SRC_DIR)/index.jade |> jade %f --out $(WWW_DIR) |> $(WWW_DIR)/index.html
+
+# Sass
+:$(SASS_DIR)/main.sass |> sassc $(SASSC_FLAGS) %f | postcss $(POSTCSS_FLAGS) --output %o |> $(CSS_DIR)/main.css
+
+# JS Libs
+:$(JS_LIBS_DIR)/ramda.*.js $(JS_LIBS_DIR)/react.*.js $(JS_LIBS_DIR)/react-dom.*.js |> cat %f > %o |> $(JS_DIR)/libs.js
+
+# LiveScript
+:$(LS_DIR)/main.ls |> lsc $(LSC_FLAGS) %f | uglifyjs $(UGLIFYJS_FLAGS) > %o |> $(JS_DIR)/main.js

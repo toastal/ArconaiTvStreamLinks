@@ -1,0 +1,156 @@
+$color-primary: hsl(356, 91%, 50%)
+
+
+%color-transitions
+  transition-property: border-color, background-color, color
+  transition-duration: 200ms
+  transition-timing-function: ease-out
+
+
+html, body
+  margin: 0
+  padding: 0
+
+
+html
+  box-sizing: border-box
+  background-color: #fff
+  color: hsla(0, 0%, 0%, 0.8)
+  font-family: sans-serif
+  font-size: 62.5%
+
+  &.dark
+    background-color: #000
+    color: hsla(0, 0%, 100%, 0.8)
+
+
+*, *::before, *::after
+  box-sizing: inherit
+
+
+body
+  position: relative
+
+
+a
+  @extend %color-transitions
+  color: $color-primary
+  text-decoration: none
+
+  &:hover, &:focus
+    text-decoration: underline
+
+  &:active
+    background: $color-primary
+    color: #fff
+
+
+.asl-header, .asl-settings-dialog, .asl-footer
+  @extend %color-transitions
+  background-color: #000
+  color: #fff
+
+  .dark &
+    background-color: #fff
+    color: #000
+
+.asl-header
+  display: flex
+  flex-flow: row nowrap
+  justify-content: space-between
+  align-items: stretch
+  overflow: hidden
+  font-family: serif
+  font-size: 1.5rem
+  text-align: center
+  text-transform: uppercase
+
+  > h1
+    flex: 1 1 auto
+    overflow: hidden
+    margin: 0
+    padding: 0.6em
+    font-size: inherit
+    font-weight: inherit
+    line-height: inherit
+    white-space: nowrap
+    text-overflow: ellipsis
+
+
+.asl-settings-btn
+  @extend %color-transitions
+  appearance: none
+  flex: 0 0 auto
+  padding: 0.5em
+  border: none
+  background: none
+  font-size: 1.2em
+  line-height: 0
+
+  &:hover, &:focus
+    color: mix(#000, $color-primary, 50%)
+
+  &:active
+    margin: 0
+    color: $color-primary
+
+.asl-settings-dialog
+  position: absolute
+  right: 0
+  left: 0
+  width: 100%
+  padding: 1rem
+  font-size: 1.6rem
+
+  select
+    background: #fff
+    color: #000
+
+
+.asl-list
+  list-style: none
+  margin: 0
+  padding: 0
+  font-size: 1.8rem
+  line-height: 1.4
+
+
+.asl-list-link
+  display: block
+  padding: 0.9em 1.2em
+  color: inherit
+  hyphens: auto
+
+  &:hover, &:focus
+    background-color: transparentize($color-primary, 0.85)
+    text-decoration: none
+
+  &:active > .asl-list-item-spinner
+    color: #000
+
+
+.asl-list-item + .asl-list-item > .asl-list-link
+  border-top: 0.1rem solid hsla(0, 0%, 0%, 0.3)
+
+  .dark &
+    border-top-color: hsla(0, 0%, 100%, 0.3)
+
+
+.asl-list-item-spinner
+  display: inline-block
+  color: $color-primary
+  margin: 0 0.25em
+  animation: 2.25s linear 0s infinite normal spinit
+
+
+.asl-footer
+  padding: 0.8em
+  font-size: 1.4rem
+  text-align: center
+
+
+@keyframes spinit
+  0%
+    transform: rotate(0deg)
+  100%
+    transform: rotate(540deg)

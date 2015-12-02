@@ -97,10 +97,14 @@ a
   background: none
   color: $color-primary
   font-size: 1.2em
+  font-weight: 700
   line-height: 0
 
   &:hover, &:focus
     color: mix(#000, $color-primary, 50%)
+
+  &:focus
+    outline: none
 
   &:active
     margin: 0
@@ -111,16 +115,30 @@ a
 
 
 .asl-settings-dialog
-  position: absolute
+  position: fixed
+  top: $height-header
   right: 0
   left: 0
   width: 100%
-  padding: 1rem
+  padding: 1rem 1.8rem
   font-size: 1.6rem
 
-  select
-    background: #fff
-    color: #000
+  input, select, textarea
+    @extend %color-transitions
+    appearance: none
+    border: none
+    border-bottom: 0.1rem solid currentColor
+    background: #000
+    color: #fff
+    font: inherit
+
+    &:focus
+      border-bottom-color: $color-primary
+      outline: none
+
+    .dark &
+      background: #fff
+      color: #000
 
 
 .asl-list

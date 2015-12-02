@@ -1,4 +1,4 @@
-package ViewFile;
+package al.toast.plugins.ViewFile;
 
 
 import java.io.*;
@@ -12,6 +12,7 @@ import org.json.JSONObject;
 import android.content.ActivityNotFoundException;
 import android.content.Context;
 import android.content.Intent;
+import android.net.Uri;
 
 
 public class ViewFile extends CordovaPlugin {
@@ -27,15 +28,17 @@ public class ViewFile extends CordovaPlugin {
       final JSONObject arg_object = args.getJSONObject(0);
       final String url = arg_object.getString("url");
 
+      Context context = cordova.getActivity().getApplicationContext();
+
       try {
         // set intents and view file
         Intent intent = new Intent(Intent.ACTION_VIEW);
-        intent.setData(url);
-        startActivity(intent);
+        intent.setData(Uri.parse(url));
+        context.startActivity(intent);
 
         callbackContext.success();
 			} catch (ActivityNotFoundException e) {
-				callbackContext.error(e);
+				callbackContext.error("Activity Not Found");
 			}
 
       return true;

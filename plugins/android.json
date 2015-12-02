@@ -7,11 +7,14 @@
         "files": {}
     },
     "installed_plugins": {
-        "cordova-plugin-whitelist": {
-            "PACKAGE_NAME": "io.cordova.hellocordova"
+        "actionview": {
+            "PACKAGE_NAME": "al.toast.arconaitvstreamlinks"
         },
-        "ch.ti8m.documenthandler": {
-            "PACKAGE_NAME": "io.cordova.hellocordova"
+        "cordova-plugin-whitelist": {
+            "PACKAGE_NAME": "al.toast.arconaitvstreamlinks"
+        },
+        "viewfile": {
+            "PACKAGE_NAME": "al.toast.arconaitvstreamlinks"
         }
     },
     "dependent_plugins": {}

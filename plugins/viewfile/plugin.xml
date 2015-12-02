@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <plugin xmlns="http://www.phonegap.com/ns/plugins/1.0"
-           id="actionview"
+           id="viewfile"
       version="0.0.1">
 
   <engines>
@@ -23,11 +23,11 @@
 
 		<config-file target="res/xml/config.xml" parent="/*">
 			<feature name="DocumentHandler" >
-				<param name="android-package" value="plugins.ViewFile"/>
+        <param name="android-package" value="al.toast.plugins.ViewFile"/>
 			</feature>
 		</config-file>
 
-    <source-file src="src/android/ViewFile.java" target-dir="src/plugins" />
+    <source-file src="src/android/ViewFile.java" target-dir="src/al/toast/plugins" />
 
   </platform>
 

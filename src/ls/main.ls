@@ -46,12 +46,13 @@ ShowListItem = React.createClass {
     e.target.blur!
     @setState {isLoading: true}
     fetchCorsDomFromUrl(@props.data.url)(
-      ((dom) -> dom.querySelector ".flowplayer video>source[src*=rtmp]"),
+      (apply (invoker 1, "querySelector"), [".flowplayer video>source[src*=rtmp]"]),
       (prop "src"),
       ((src) ~>
         @setState {isLoading: false}
         if src
           @setState {href: src}
+          # The Cordova app uses a native call to a plugin I made
           if path ["cordova", "platformId"], window is "android" and window.viewFileFromUrl
             window.viewFileFromUrl T, ((err) -> alert "File Handle Error: " + err), src
           else
@@ -80,14 +81,18 @@ ShowList = React.createClass {
     {
       loadingState    : 0
       settingsVisible : false
-      showData        : {}
+      showData        : []
     }
 
   componentDidMount: :componentDidMount ->
     storedTheme = window.localStorage.getItem "asl-color-theme"
     if storedTheme then @setState {colorTheme: storedTheme}, @handleDocTheme
+    @fetchStreamLinks!
+
+  fetchStreamLinks: :fetchStream (e) ->
+    @setState {loadingState: 0, showData: []}
     (fetchCorsDomFromUrl "https://www.arconaitv.me/")(
-      (dom) -> dom.querySelectorAll linkSelector,
+      (apply (invoker 1, "querySelectorAll"), [linkSelector]),
       (map (el) -> {title: (trim el.textContent), url: el.href}),
       (sortBy prop "title"),
       ((showData) ~> @setState {loadingState: 2, showData: showData})
@@ -135,6 +140,7 @@ ShowList = React.createClass {
                 option {value: "dark"}, "Dark"
               ]
             ]
+            button {type: "button", onClick: @fetchStreamLinks}, "Refresh Stream List"
           ]
         ul {className: "asl-list"},
           map ((showData) -> React.createElement ShowListItem, {data: showData}), @state.showData

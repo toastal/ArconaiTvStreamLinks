@@ -49,6 +49,24 @@ a
     color: #fff
 
 
+button, input[type=button], input[type=reset], input[type=submit]
+  @extend %color-transitions
+  appearance: none
+  padding-left: 0
+  padding-right: 0
+  border: none
+  border-bottom: 0.1rem solid currentColor
+  background: transparent
+  color: inherit
+  font: inherit
+
+  &:focus
+    outline: none
+
+  &:active
+    color: $color-primary
+
+
 .asl-header, .asl-settings-dialog, .asl-footer
   @extend %color-transitions
   background-color: #000
@@ -57,6 +75,10 @@ a
   .dark &
     background-color: #fff
     color: #000
+
+
+.asl-header > h1, .asl-list-link
+  user-select: none
 
 
 .asl-header
@@ -90,11 +112,9 @@ a
 
 .asl-settings-btn
   @extend %color-transitions
-  appearance: none
   flex: 0 0 auto
   padding: 0.5em
   border: none
-  background: none
   color: $color-primary
   font-size: 1.2em
   font-weight: 700
@@ -122,6 +142,10 @@ a
   width: 100%
   padding: 1rem 1.8rem
   font-size: 1.6rem
+
+  label
+    display: block
+    padding-bottom: 0.4em
 
   input, select, textarea
     @extend %color-transitions
@@ -154,6 +178,7 @@ a
   padding: 0.9em 1.2em
   color: inherit
   hyphens: auto
+  -webkit-tap-highlight-color: transparent
 
   &:hover, &:focus
     background-color: transparentize($color-primary, 0.85)
@@ -164,10 +189,10 @@ a
 
 
 .asl-list-item + .asl-list-item > .asl-list-link
-  border-top: 0.1rem solid hsla(0, 0%, 0%, 0.3)
+  border-top: 0.1rem solid hsla(0, 0%, 0%, 0.2)
 
   .dark &
-    border-top-color: hsla(0, 0%, 100%, 0.3)
+    border-top-color: hsla(0, 0%, 100%, 0.2)
 
 
 .asl-list-item-spinner

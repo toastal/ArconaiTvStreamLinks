@@ -1,4 +1,4 @@
-{apply, invoker, map, partialRight, path, pipeP, prop, sortBy, tap, trim, T} = R
+{__, apply, converge, gte, invoker, lt, map, partialRight, path, pipe, pipeP, prop, sortBy, tap, trim, T} = R
 
 {a, button, div, footer, header, h1, label, li, option, select, span, ul} = React.DOM
 
@@ -19,12 +19,25 @@ domFromHtmlStr = :domFromHtmlStr (str) ->
   domParser.parseFromString str, "text/html"
 
 
+# httpStatusError : Int -> Bool
+httpStatusError =
+  converge R.and, [(lt __, 200), (gte __, 400)]
+
+
 # only does happy path at the moment
-# fetchDomCorsFromUrl : String -> (HTMLDocument -> ())
-fetchCorsDomFromUrl = :fetchDomFromUrl (url) ~>
+# fetchDomCorsFromUrl : String -> (Response -> ()) -> (HTMLDocument -> ())
+fetchCorsDomFromUrl = :fetchDomFromUrl (url, errorFn) ~>
   corsUrl = "https://crossorigin.me/" + url
-  (...pipeline) ~>
-    apply(pipeP, [(partialRight fetch, [{mode: "cors"}]), (invoker 0, "text"), domFromHtmlStr].concat(pipeline))(corsUrl)
+  if navigator.onLine
+    (...pipeline) ~>
+      apply(pipeP, [
+        (partialRight fetch, [{mode: "cors"}])
+        (R.when (pipe (prop "status"), httpStatusError), (resp) ~> if typeof errorFn is "function" then errorFn resp)
+        (invoker 0, "text")
+        domFromHtmlStr
+      ].concat(pipeline))(corsUrl)
+  else if typeof errorFn is "function"
+    errorFn "Device Offline"
 
 
 # ShowListItem : ReactClass
@@ -45,8 +58,8 @@ ShowListItem = React.createClass {
     e.preventDefault!
     e.target.blur!
     @setState {isLoading: true}
-    fetchCorsDomFromUrl(@props.data.url)(
-      (apply (invoker 1, "querySelector"), [".flowplayer video>source[src*=rtmp]"]),
+    fetchCorsDomFromUrl(@props.data.url, (err) ~> alert err)(
+      ((dom) -> dom.querySelector(".flowplayer video>source[type='application/x-mpegurl']")),
       (prop "src"),
       ((src) ~>
         @setState {isLoading: false}
@@ -89,14 +102,26 @@ ShowList = React.createClass {
     if storedTheme then @setState {colorTheme: storedTheme}, @handleDocTheme
     @fetchStreamLinks!
 
-  fetchStreamLinks: :fetchStream (e) ->
-    @setState {loadingState: 0, showData: []}
-    (fetchCorsDomFromUrl "https://www.arconaitv.me/")(
-      (apply (invoker 1, "querySelectorAll"), [linkSelector]),
-      (map (el) -> {title: (trim el.textContent), url: el.href}),
-      (sortBy prop "title"),
-      ((showData) ~> @setState {loadingState: 2, showData: showData})
-    )
+  fetchStreamLinksError: :fetchStreamLinksError (resp) ~>
+    if not navigator.onLine and window.localStorage.getItem "streamLinks"
+      @setState {loadingState: 3, showData: JSON.parse window.localStorage.streamLinks}
+    else
+      @setState {loadingstate: 1, errorMsg: "Response status #{resp.status}"}
+
+  fetchStreamLinks: :fetchStreamLinks (e) ->
+    if not navigator.onLine and window.localStorage.getItem "streamLinks"
+      @setState {loadingState: 3, showData: JSON.parse window.localStorage.streamLinks}
+    else
+      @setState {loadingState: 0, showData: []}
+      (fetchCorsDomFromUrl "https://www.arconaitv.me/", @fetchStreamLinksError.bind(this))(
+        (apply (invoker 1, "querySelectorAll"), [linkSelector]),
+        (map (el) -> {title: (trim el.textContent), url: el.href}),
+        (sortBy prop "title"),
+        ((showData) ~>
+          window.localStorage.setItem "streamLinks", (JSON.stringify showData)
+          @setState {loadingState: 2, showData: showData}
+        )
+      )
 
   handleClickOutside: :handleClickOutside (e) ->
     e.preventDefault!
@@ -124,7 +149,7 @@ ShowList = React.createClass {
     if @state.loadingState is 0
       div null, "Loading..."
     else if @state.loadingState is 1
-      div null, "Error"
+      div null, "Error" + if @state.errorMsg then ": #{@state.errorMsg}" else ""
     else
       div null, [
         header {className: "asl-header"}, [
@@ -140,7 +165,8 @@ ShowList = React.createClass {
                 option {value: "dark"}, "Dark"
               ]
             ]
-            button {type: "button", onClick: @fetchStreamLinks}, "Refresh Stream List"
+            button {type: "button", onClick: ((e) ~>
+                                                console.log "test", e)}, "Refresh Stream List"
           ]
         ul {className: "asl-list"},
           map ((showData) -> React.createElement ShowListItem, {data: showData}), @state.showData
